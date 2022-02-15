@@ -5,6 +5,7 @@
 #include <grpc/support/log.h>
 #include <grpcpp/grpcpp.h>
 #include "cpp_im_server.grpc.pb.h"
+
 using grpc::Server;
 using grpc::ServerAsyncResponseWriter;
 using grpc::ServerBuilder;
@@ -14,7 +15,8 @@ using grpc::Status;
 using cpp_im_server::HeartBeat;
 using cpp_im_server::HeartBeatRequest;
 using cpp_im_server::HeartBeatReply;
-namespace logic_server{
+
+namespace db_server{
 class ServerImpl final {
     std::unique_ptr<ServerCompletionQueue> cq_;
     HeartBeat::AsyncService service_;

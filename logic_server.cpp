@@ -4,7 +4,7 @@
 
 #include <grpc/support/log.h>
 #include <grpcpp/grpcpp.h>
-#include "logic_server.grpc.pb.h"
+#include "cpp_im_server.grpc.pb.h"
 #include "logic_server.h"
 
 using grpc::Server;
@@ -17,7 +17,7 @@ using cpp_im_server::HeartBeat;
 using cpp_im_server::HeartBeatRequest;
 using cpp_im_server::HeartBeatReply;
 
-void ServerImpl::HandleRpcs() {
+void logic_server::ServerImpl::HandleRpcs() {
     // Spawn a new CallData instance to serve new clients.
     new ServerImpl::CallData(&service_, cq_.get());
     void* tag;  // uniquely identifies a request.
@@ -34,10 +34,9 @@ void ServerImpl::HandleRpcs() {
     }
 }
 
-
 // There is no shutdown handling in this code.
-void ServerImpl::Run() {
-    std::string server_address("0.0.0.0:50051");
+void logic_server::ServerImpl::Run(int port) {
+    std::string server_address = std::string("0.0.0.0:") + std::to_string(port);
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
@@ -49,13 +48,13 @@ void ServerImpl::Run() {
     cq_ = builder.AddCompletionQueue();
     // Finally assemble the server.
     server_ = builder.BuildAndStart();
-    std::cout << "Server listening on " << server_address << std::endl;
+    std::cout << "Logic Server listening on " << server_address << std::endl;
 
     // Proceed to the server's main loop.
     HandleRpcs();
 }
 
-void ServerImpl::CallData::Proceed() {
+void logic_server::ServerImpl::CallData::Proceed() {
     if (status_ == CREATE) {
         // Make this instance progress to the PROCESS state.
         status_ = PROCESS;
