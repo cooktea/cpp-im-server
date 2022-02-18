@@ -12,14 +12,14 @@ using grpc::ServerBuilder;
 using grpc::ServerCompletionQueue;
 using grpc::ServerContext;
 using grpc::Status;
-using cpp_im_server::HeartBeat;
-using cpp_im_server::HeartBeatRequest;
-using cpp_im_server::HeartBeatReply;
+using cpp_im_server::DBService;
+using cpp_im_server::InsertRequest;
+using cpp_im_server::InsertReply;
 
 namespace db_server{
 class ServerImpl final {
     std::unique_ptr<ServerCompletionQueue> cq_;
-    HeartBeat::AsyncService service_;
+    DBService::AsyncService service_;
     std::unique_ptr<Server> server_;
     void HandleRpcs();
     public:
@@ -31,18 +31,18 @@ class ServerImpl final {
     
     class CallData {
         public:
-            CallData(HeartBeat::AsyncService* service, ServerCompletionQueue* cq)
+            CallData(DBService::AsyncService* service, ServerCompletionQueue* cq)
                 : service_(service), cq_(cq), responder_(&ctx_), status_(CREATE) {
                 Proceed();
             }
             void Proceed();
         private:
-            HeartBeat::AsyncService* service_;
+            DBService::AsyncService* service_;
             ServerCompletionQueue* cq_;
             ServerContext ctx_;
-            HeartBeatRequest request_;
-            HeartBeatReply reply_;
-            ServerAsyncResponseWriter<HeartBeatReply> responder_;
+            InsertRequest request_;
+            InsertReply reply_;
+            ServerAsyncResponseWriter<InsertReply> responder_;
             enum CallStatus { CREATE, PROCESS, FINISH };
             CallStatus status_;  // The current serving state.
     };

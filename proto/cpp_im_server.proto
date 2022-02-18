@@ -1,18 +1,21 @@
 syntax = "proto3";
 package cpp_im_server;
 
-// The greeting service definition.
-service HeartBeat {
-  // Sends a greeting
-  rpc check_heart_beat (HeartBeatRequest) returns (HeartBeatReply) {}
+service DBService {
+  rpc insert_one (InsertRequest) returns (InsertReply) {}
 }
 
-// The request message containing the user's name.
-message HeartBeatRequest {
-  string name = 1;
+service LogicService {
+
 }
 
-// The response message containing the greetings
-message HeartBeatReply {
+message InsertRequest {
+  string db_name = 1;
+  string col_name = 2;
+  string doc = 3;
+}
+
+message InsertReply {
   string message = 1;
+  string status = 2;
 }
