@@ -3,10 +3,23 @@ package cpp_im_server;
 
 service DBService {
   rpc insert_one (InsertRequest) returns (InsertReply) {}
+  rpc find_one (FindRequest) returns (FindReply) {}
 }
 
 service LogicService {
 
+}
+
+message FindRequest {
+  string db_name = 1;
+  string col_name = 2;
+  string query = 3;
+}
+
+message FindReply {
+  string message = 1;
+  string status = 2;
+  string doc = 3;
 }
 
 message InsertRequest {

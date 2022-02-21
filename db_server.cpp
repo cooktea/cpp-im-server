@@ -18,13 +18,18 @@ using cpp_im_server::InsertRequest;
 using cpp_im_server::InsertReply;
 
 void db_server::ServerImpl::HandleRpcs() {
-    new ServerImpl::CallData(&service_, cq_.get());
+    new InsertOneCallData(&service_, cq_.get());
+    new FindOneCallData(&service_, cq_.get());
     void* tag;
     bool ok;
     while (true) {
+        // std::cout << tag << " 0 " << ok << std::endl;
         GPR_ASSERT(cq_->Next(&tag, &ok));
+        // std::cout << tag << " 1 " << ok << std::endl;
         GPR_ASSERT(ok);
+        // std::cout << tag << " 2 " << ok << std::endl;
         static_cast<CallData*>(tag)->Proceed();
+        // std::cout << tag << " 3 " << ok << std::endl;
     }
 }
 
@@ -39,15 +44,35 @@ void db_server::ServerImpl::Run(int port) {
     HandleRpcs();
 }
 
-void db_server::ServerImpl::CallData::Proceed() {
+void db_server::ServerImpl::InsertOneCallData::doProceed() {
     if (status_ == CREATE) {
         status_ = PROCESS;
         service_->Requestinsert_one(&ctx_, &request_, &responder_, cq_, cq_, this);
+        // std::cout << "InsertOneCallData Requestinsert_one" << std::endl;
     } else if (status_ == PROCESS) {
-        new CallData(service_, cq_);
+        new InsertOneCallData(service_, cq_);
         status_ = FINISH;
+        std::cout << "InsertOneCallData" << std::endl;
         reply_.set_message("insert success");
         reply_.set_status(request_.doc());
+        responder_.Finish(reply_, Status::OK, this);
+    } else {
+        GPR_ASSERT(status_ == FINISH);
+        delete this;
+    }
+}
+
+void db_server::ServerImpl::FindOneCallData::doProceed() {
+    if (status_ == CREATE) {
+        status_ = PROCESS;
+        service_->Requestfind_one(&ctx_, &request_, &responder_, cq_, cq_, this);
+        // std::cout << "FindOneCallData Requestfind_one" << std::endl;
+    } else if (status_ == PROCESS) {
+        new FindOneCallData(service_, cq_);
+        status_ = FINISH;
+        std::cout << "FindOneCallData" << std::endl;
+        reply_.set_message("find_one success");
+        reply_.set_status(request_.query());
         responder_.Finish(reply_, Status::OK, this);
     } else {
         GPR_ASSERT(status_ == FINISH);

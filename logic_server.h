@@ -28,6 +28,7 @@ namespace logic_server{
         void HandleRpcs();
         void tick();
         void tryInsert();
+        void findOne();
         public:
             ~ServerImpl()   {
                 server_->Shutdown();
@@ -36,10 +37,36 @@ namespace logic_server{
             void Run(int port);
     };
 
-    struct AsyncClientCall {
+    class AsyncClientCall {
+        public:
+            virtual void* GetResult() = 0;
+            virtual void Proceed() = 0;
+            ClientContext context;
+            Status status;
+    };
+
+    class AsyncClientInsertCall: public AsyncClientCall {
+        public:
+        void* GetResult() override {
+            return (void*)&reply;
+        }
+        void Proceed() override {
+            std::cout << "Logic Server received AsyncClientInsertCall: message: " << reply.message() << " status: " << reply.status() << std::endl;
+        }
         cpp_im_server::InsertReply reply;
-        ClientContext context;
-        Status status;
         std::unique_ptr<ClientAsyncResponseReader<cpp_im_server::InsertReply>> response_reader;
     };
+
+    class AsyncClientFindOneCall: public AsyncClientCall {
+        public:
+        void* GetResult() override {
+            return (void*)&reply;
+        }
+        void Proceed() override {
+            std::cout << "Logic Server received: message AsyncClientFindOneCall: " << reply.message() << " status: " << reply.status() << std::endl;
+        }
+        cpp_im_server::FindReply reply;
+        std::unique_ptr<ClientAsyncResponseReader<cpp_im_server::FindReply>> response_reader;
+    };
+
 }

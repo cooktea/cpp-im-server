@@ -13,8 +13,6 @@ using grpc::ServerCompletionQueue;
 using grpc::ServerContext;
 using grpc::Status;
 using cpp_im_server::DBService;
-using cpp_im_server::InsertRequest;
-using cpp_im_server::InsertReply;
 
 namespace db_server{
 class ServerImpl final {
@@ -28,23 +26,55 @@ class ServerImpl final {
             cq_->Shutdown();
         }
         void Run(int port);
+
     
     class CallData {
         public:
             CallData(DBService::AsyncService* service, ServerCompletionQueue* cq)
-                : service_(service), cq_(cq), responder_(&ctx_), status_(CREATE) {
+                : service_(service), cq_(cq), status_(CREATE) {
                 Proceed();
             }
-            void Proceed();
-        private:
-            DBService::AsyncService* service_;
-            ServerCompletionQueue* cq_;
-            ServerContext ctx_;
-            InsertRequest request_;
-            InsertReply reply_;
-            ServerAsyncResponseWriter<InsertReply> responder_;
+            virtual void Proceed() {
+                // std::cout << "CallData Prceed" << std::endl//;
+                return;
+            }
             enum CallStatus { CREATE, PROCESS, FINISH };
-            CallStatus status_;  // The current serving state.
+            ServerContext ctx_;
+            CallStatus status_;
+            ServerCompletionQueue* cq_;
+            DBService::AsyncService* service_;
+    };
+
+    class InsertOneCallData : public CallData {
+        public:
+        void Proceed() override {
+            doProceed();
+        };
+        void doProceed();
+        InsertOneCallData(DBService::AsyncService* service, ServerCompletionQueue* cq): CallData(service, cq), responder_(&ctx_) {
+            // std::cout << "InsertOneCallData Prceed" << std::endl;
+            Proceed();
+        };
+        cpp_im_server::InsertRequest request_;
+        cpp_im_server::InsertReply reply_;
+        ServerAsyncResponseWriter<cpp_im_server::InsertReply> responder_;
+    };
+
+    class FindOneCallData: public CallData {
+        public:
+        void Proceed() override {
+            doProceed();
+        };
+        void doProceed();
+        FindOneCallData(DBService::AsyncService* service, ServerCompletionQueue* cq): CallData(service, cq), responder_(&ctx_) {
+            // std::cout << "FindOneCallData Prceed" << std::endl;
+            Proceed();
+        };
+        cpp_im_server::FindRequest request_;    
+        cpp_im_server::FindReply reply_;
+        ServerAsyncResponseWriter<cpp_im_server::FindReply> responder_;
     };
 };
+
+
 }

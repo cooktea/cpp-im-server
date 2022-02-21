@@ -19,20 +19,8 @@ void start_db_server(int port)
 
 int main()
 {
-    const int logic_server_port[] = {18800, 18801};
+    const int logic_server_port[] = {18800};
     const int db_server_port[] = {18900};
-    for(int i=0; i<sizeof(logic_server_port)/sizeof(logic_server_port[0]); i++){
-        pid_t fpid = fork();
-        if (fpid < 0) {
-            std::cout << "Error while fork logic server, port: " << logic_server_port[i] << std::endl;
-        }
-        else if (fpid == 0) {  
-            std::cout << "Success start logic server, port: " << logic_server_port[i] << " pid :" << getpid() << std::endl;
-            start_logic_server(logic_server_port[i]);
-        }  
-        else {  
-        }  
-    }
     for(int i=0; i<sizeof(db_server_port)/sizeof(db_server_port[0]); i++){
         pid_t fpid = fork();
         if (fpid < 0) {
@@ -44,6 +32,18 @@ int main()
         }  
         else {  
         }
+    }
+    for(int i=0; i<sizeof(logic_server_port)/sizeof(logic_server_port[0]); i++){
+        pid_t fpid = fork();
+        if (fpid < 0) {
+            std::cout << "Error while fork logic server, port: " << logic_server_port[i] << std::endl;
+        }
+        else if (fpid == 0) {  
+            std::cout << "Success start logic server, port: " << logic_server_port[i] << " pid :" << getpid() << std::endl;
+            start_logic_server(logic_server_port[i]);
+        }  
+        else {  
+        }  
     }
     while(true){
         sleep(1000);
