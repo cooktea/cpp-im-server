@@ -78,7 +78,7 @@ void logic_server::ServerImpl::Run(int port) {
     std::cout << "Logic Server listening on " << server_address << std::endl;
     db_stub = DBService::NewStub(grpc::CreateChannel("localhost:18900", grpc::InsecureChannelCredentials()));
     while(true){
-        // HandleRpcs();
+        HandleRpcs();
         tick();
         sleep(3);
     }
