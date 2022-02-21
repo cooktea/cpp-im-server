@@ -1,4 +1,0 @@
-#define LOGIC_PROCESS_NUM   2
-#define DB_PROCESS_NUM      1
-#define LOGIC_PROCESS_PORT  [18800, 18801]
-#define DB_PROCESS_PORT     18900
