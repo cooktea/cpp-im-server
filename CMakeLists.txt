@@ -18,12 +18,21 @@ add_custom_command(
         "${hw_proto}"
       DEPENDS "${hw_proto}")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
+
+find_package (mongoc-1.0 1.7 REQUIRED)
+
+include_directories(/usr/local/include/bsoncxx/v_noabi/)
+include_directories(/usr/local/include/mongocxx/v_noabi/)
+include_directories(/usr/local/include/libbson-1.0)
+include_directories(/usr/local/include/libmongoc-1.0)
+
 add_library(hw_grpc_proto
   ${hw_grpc_srcs}
   ${hw_grpc_hdrs}
   ${hw_proto_srcs}
   ${hw_proto_hdrs}
 )
+
 add_library(server_logic
   "./logic_server.cpp"
   "./logic_server.h"
@@ -37,17 +46,21 @@ target_link_libraries(hw_grpc_proto
   ${_GRPC_GRPCPP}
   ${_PROTOBUF_LIBPROTOBUF})
 
-
 target_link_libraries(server_logic
 ${_REFLECTION}
 ${_GRPC_GRPCPP}
-${_PROTOBUF_LIBPROTOBUF})
+${_PROTOBUF_LIBPROTOBUF}
+bsoncxx
+mongocxx
+)
 
 foreach(_target main)
   add_executable(${_target} "${_target}.cpp")
   target_link_libraries(${_target}
     hw_grpc_proto
     server_logic
+    bsoncxx
+    mongocxx
     ${_REFLECTION}
     ${_GRPC_GRPCPP}
     ${_PROTOBUF_LIBPROTOBUF})

@@ -19,12 +19,7 @@ void logic_server::ServerImpl::HandleRpcs() {
 }
 
 void logic_server::ServerImpl::tick() {
-    if (rand() % 100 > 50){
-        tryInsert();
-    }
-    else{
-        findOne();
-    }
+    tryInsert();
     void* got_tag;
     bool ok = false;
     bool res = db_cq.Next(&got_tag, &ok);
@@ -44,7 +39,7 @@ void logic_server::ServerImpl::findOne() {
     cpp_im_server::FindRequest request;
     request.set_db_name("cpp-im-dev");
     request.set_col_name("user");
-    request.set_query("{'user_name': 'chenkang'}");
+    request.set_query("{\"user_name\": \"chenkang\", \"rand_id\":" + std::to_string(rand()) + "}");
     std::cout << "findOne" << std::endl;
     AsyncClientFindOneCall* call = new AsyncClientFindOneCall;
     call->response_reader = db_stub->PrepareAsyncfind_one(&call->context, request, &db_cq);
@@ -56,7 +51,7 @@ void logic_server::ServerImpl::tryInsert() {
     cpp_im_server::InsertRequest request;
     request.set_db_name("cpp-im-dev");
     request.set_col_name("user");
-    std::string doc = "{'name':'" + std::to_string(rand()) + "'}";
+    std::string doc = "{\"user_name\": \"chenkang\", \"rand_id\":" + std::to_string(rand()) + "}";
     request.set_doc(doc);
     std::cout << "tryInsert" << std::endl;
     AsyncClientInsertCall* call = new AsyncClientInsertCall;
@@ -64,7 +59,6 @@ void logic_server::ServerImpl::tryInsert() {
     call->response_reader->StartCall();
     call->response_reader->Finish(&call->reply, &call->status, (void*)call);
     std::cout << "tryInsert end" << std::endl;
-
 }
 
 void logic_server::ServerImpl::Run(int port) {
