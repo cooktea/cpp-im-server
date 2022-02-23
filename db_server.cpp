@@ -60,7 +60,7 @@ void db_server::ServerImpl::InsertOneCallData::doProceed() {
         std::cout << request_.doc() << std::endl;
         bsoncxx::document::value doc_value = bsoncxx::from_json(request_.doc());
         bsoncxx::stdx::optional<mongocxx::result::insert_one> result = coll.insert_one(bsoncxx::document::view_or_value(doc_value));
-        std::cout << "insert result: " << result << std::endl;
+        // std::cout << "insert result: " << result << std::endl;
         std::cout << "InsertOneCallData" << std::endl;
         reply_.set_message("insert success");
         reply_.set_status(request_.doc());

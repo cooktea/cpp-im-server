@@ -55,7 +55,7 @@ class ServerImpl final {
             DBService::AsyncService* service_;
             mongocxx::client* client_;
     };
-    
+
     class InsertOneCallData : public CallData {
         public:
         void Proceed() override {

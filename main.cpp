@@ -19,7 +19,7 @@ void start_db_server(int port)
 
 int main()
 {
-    const int logic_server_port[] = {18800, 18801};
+    const int logic_server_port[] = {18800};
     const int db_server_port[] = {18900};
     for(int i=0; i<sizeof(db_server_port)/sizeof(db_server_port[0]); i++){
         pid_t fpid = fork();

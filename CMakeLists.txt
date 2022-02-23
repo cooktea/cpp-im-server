@@ -21,6 +21,7 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 find_package (mongoc-1.0 1.7 REQUIRED)
 
+# 添加mongo-cxx-driver动态连接库
 include_directories(/usr/local/include/bsoncxx/v_noabi/)
 include_directories(/usr/local/include/mongocxx/v_noabi/)
 include_directories(/usr/local/include/libbson-1.0)
@@ -54,14 +55,32 @@ bsoncxx
 mongocxx
 )
 
-foreach(_target main)
-  add_executable(${_target} "${_target}.cpp")
-  target_link_libraries(${_target}
-    hw_grpc_proto
-    server_logic
-    bsoncxx
-    mongocxx
-    ${_REFLECTION}
-    ${_GRPC_GRPCPP}
-    ${_PROTOBUF_LIBPROTOBUF})
-endforeach()
+add_executable(im-server "main.cpp")
+target_link_libraries(im-server
+  hw_grpc_proto
+  server_logic
+  bsoncxx
+  mongocxx
+  ${_REFLECTION}
+  ${_GRPC_GRPCPP}
+  ${_PROTOBUF_LIBPROTOBUF})
+
+add_executable(logic-server "start_logic_server.cpp")
+target_link_libraries(logic-server
+  hw_grpc_proto
+  server_logic
+  bsoncxx
+  mongocxx
+  ${_REFLECTION}
+  ${_GRPC_GRPCPP}
+  ${_PROTOBUF_LIBPROTOBUF})
+
+add_executable(db-server "start_db_server.cpp")
+target_link_libraries(db-server
+  hw_grpc_proto
+  server_logic
+  bsoncxx
+  mongocxx
+  ${_REFLECTION}
+  ${_GRPC_GRPCPP}
+  ${_PROTOBUF_LIBPROTOBUF})

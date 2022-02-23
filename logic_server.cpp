@@ -74,6 +74,6 @@ void logic_server::ServerImpl::Run(int port) {
     while(true){
         HandleRpcs();
         tick();
-        sleep(3);
+        sleep(1);
     }
 }
